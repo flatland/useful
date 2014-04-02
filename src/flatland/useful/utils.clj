@@ -31,6 +31,23 @@
      ~@forms
      value#))
 
+(defmacro let-where
+  "(let-where body* :where [bindings*])
+Special Form
+  binding => binding-form init-expr
+
+  A let form to emphasize the algorithm over how the initial values are
+  derived. "
+  [& body]
+  (let [where-clause (last body)
+        where-keyword (last (butlast body))
+        new-body (butlast (butlast body))]
+    `(if (= :where ~where-keyword)
+       (let [~@where-clause]
+         (do ~@new-body))
+       (throw (java.lang.IllegalArgumentException.
+               "let-where requires the :where keyword as the second to last argument.")))))
+
 (letfn [(no-arg-nil [f]
           (fn
             ([] nil)
